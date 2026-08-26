@@ -18,6 +18,6 @@
   },
   "devDependencies": {
     "electron": "44.0.0",
-    "esbuild": "^0.25.0"
+    "esbuild": "^0.28.2"
   }
 }
