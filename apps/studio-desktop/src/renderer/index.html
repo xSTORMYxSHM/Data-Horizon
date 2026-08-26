@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; media-src 'self' blob: data:; style-src 'self'; script-src 'self'; connect-src 'self' ws://127.0.0.1:*;">
+  <title>Data Horizon Studio</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-mode="editor">
+  <main class="studio-shell">
+    <nav class="menubar" aria-label="Application menu">
+      <img class="menu-logo" src="../../assets/storm-horizon-sh.png" alt="" aria-hidden="true">
+      <button data-menu="file">File</button><button data-menu="edit">Edit</button><button data-menu="select">Select</button><button data-menu="layer">Layer</button><button data-menu="effects">Effects</button><button data-menu="audio">Audio</button><button data-menu="view">View</button><button data-menu="window">Window</button><button data-menu="workspace">Workspace</button><button data-menu="help">Help</button>
+      <div id="menuPopover" class="menu-popover" hidden></div>
+    </nav>
+    <header class="topbar">
+      <div class="brand-block">
+        <img class="brand-mark" src="../../assets/storm-horizon-sh.png" alt="Storm Horizon Media">
+        <div><strong>DATA HORIZON</strong><small>NON-DESTRUCTIVE VISUAL COMPOSITOR</small></div>
+      </div>
+      <div class="project-identity"><span id="projectName" contenteditable="true" spellcheck="false" title="Click to rename project">Untitled Horizon</span><i id="dirtyState">SAVED</i></div>
+      <nav class="top-actions" aria-label="Project actions">
+        <button id="newProjectButton">New</button>
+        <button id="openProjectButton">Open</button>
+        <button id="saveProjectButton">Save</button>
+        <button id="saveAsProjectButton">Save As</button>
+        <span class="action-divider"></span>
+        <button id="undoButton" title="Undo (Ctrl+Z)">Undo</button>
+        <button id="redoButton" title="Redo (Ctrl+Y)">Redo</button>
+        <button id="publishProjectButton" class="publish-action">Publish…</button>
+        <button id="runtimeButton" class="primary-action">Live View</button>
+      </nav>
+    </header>
+
+    <aside class="toolbox-panel workspace-panel" data-workspace-panel="toolbox" aria-label="Toolbox">
+      <header class="workspace-panel-bar" data-workspace-handle="toolbox"><strong>TOOLS</strong><button class="workspace-float-button" data-workspace-float-toggle="toolbox" title="Float or dock Toolbox">◇</button></header>
+      <div class="tool-grid">
+        <button id="moveToolButton" class="active" title="Move and transform">↖<small>Move</small></button>
+        <button id="maskBrushToolButton" title="Paint or erase a layer mask">◉<small>Mask</small></button>
+        <button id="addPathButton" title="Create and edit an animated data path">⤳<small>Path</small></button>
+        <button id="importImageButton" title="Place image as a new layer">▧<small>Image</small></button>
+        <button id="addTextButton" title="Add editable text">T<small>Text</small></button>
+        <button id="addHudTextButton" title="Add a styled HUD title">▤<small>HUD Text</small></button>
+        <button id="addShapeButton" title="Add a geometric shape">◆<small>Shape</small></button>
+        <button id="addFrameButton" title="Add a stream window frame">⌗<small>Frame</small></button>
+        <button id="addSpectrumButton" title="Add an audio-reactive spectrum">▥<small>Spectrum</small></button>
+        <button id="addWaveformButton" title="Add an audio-reactive waveform">⌁<small>Waveform</small></button>
+        <button id="addParticlesButton" title="Add an audio-reactive particle field">✦<small>Particles</small></button>
+        <button id="openTemplatesButton" title="Insert a broadcast composition">▦<small>Templates</small></button>
+      </div>
+      <div class="color-wells" title="Foreground and canvas colors"><input id="foregroundColorInput" type="color" value="#49e4e1" title="Apply foreground color to selected layer"><input id="backgroundColorInput" type="color" value="#02060d" title="Set canvas background color"><button id="swapColorsButton" title="Swap foreground and background colors">⇄</button></div>
+      <section class="tool-options">
+        <span>TOOL OPTIONS</span>
+        <strong id="toolOptionsTitle">Move Tool</strong>
+        <div id="moveToolOptions">
+          <label><input id="autoSelectInput" type="checkbox" checked> Auto-select layer</label><label><input id="showTransformInput" type="checkbox" checked> Show transform</label><label><input id="showRulersInput" type="checkbox" checked> Show rulers and guides</label><label>Marquee mode<select id="marqueeModeInput"><option value="contain">Fully enclosed</option><option value="intersect">Touching selection</option></select></label><small class="marquee-help">Drag the canvas to select. Shift adds, Alt subtracts, Ctrl toggles.</small>
+          <div class="guide-authoring"><small id="guideCountLabel">0 custom guides</small><select id="guideOrientationInput" aria-label="Guide orientation"><option value="vertical">Vertical</option><option value="horizontal">Horizontal</option></select><label>Position <input id="guidePositionInput" type="number" min="0" step="1" value="960"></label><button id="addGuideButton" type="button">+ Add Guide</button><div><button id="lockGuidesButton" type="button">Lock</button><button id="clearGuidesButton" type="button">Clear</button></div></div>
+        </div>
+        <div id="maskToolOptions" hidden>
+          <select id="maskBrushModeInput" aria-label="Brush mode" hidden><option value="hide">Hide</option><option value="reveal">Reveal</option></select>
+          <small class="brush-options-note">Brush subtools and properties are available above the canvas.</small>
+          <label>Size <output id="maskBrushSizeValue">120</output><input id="maskBrushSizeInput" type="range" min="8" max="600" step="1" value="120"></label>
+          <label>Softness <output id="maskBrushSoftnessValue">45%</output><input id="maskBrushSoftnessInput" type="range" min="0" max="1" step="0.01" value="0.45"></label>
+          <label>Opacity <output id="maskBrushOpacityValue">100%</output><input id="maskBrushOpacityInput" type="range" min="0.01" max="1" step="0.01" value="1"></label>
+        </div>
+        <div id="pathToolOptions" hidden><small>Click canvas to add points. Drag points to reshape.</small><button id="deletePathPointButton">Delete Last</button><button id="finishPathButton">Finish</button></div>
+      </section>
+    </aside>
+
+    <section class="stage-panel">
+      <div class="stage-toolbar">
+        <div><span class="status-dot"></span><strong>STUDIO CANVAS</strong><small id="renderStatus">INITIALIZING WEBGL2</small></div>
+        <div class="stage-meta"><span>1920 × 1080</span><button id="snapToggleButton" class="active" title="Snap transforms to the canvas">SNAP</button><button id="guidesToggleButton" class="active" title="Show canvas guides">GUIDES</button><button id="smartGuidesToggleButton" class="active" type="button" aria-pressed="true" title="Snap to nearby layer edges and centers">SMART</button><button id="motionPathToggleButton" class="active" type="button" aria-pressed="true" title="Show spatial animation paths for the selected layer">MOTION</button><button id="addMotionKeyButton" type="button" title="Add paired X and Y keys at the playhead">+ KEY</button><button id="zoomOutButton" title="Zoom out">−</button><select id="zoomPresetInput" title="Canvas zoom"><option value="fit">Fit</option><option value="0.25">25%</option><option value="0.5">50%</option><option value="0.75">75%</option><option value="1">100%</option><option value="1.5">150%</option><option value="2">200%</option></select><button id="zoomInButton" title="Zoom in">+</button><span id="zoomLabel">FIT</span></div>
+      </div>
+      <div id="brushContextBar" class="brush-context-bar" hidden>
+        <section class="brush-subtools" aria-label="Brush subtools"><span>SUB TOOL</span><div><button id="brushPrimaryModeButton" class="active" type="button" title="Primary brush (B)">● Paint</button><button id="brushSecondaryModeButton" type="button" title="Secondary brush (E)">◌ Erase</button></div></section>
+        <section class="brush-presets" aria-label="Brush presets"><span>BRUSH</span><div><button type="button" data-brush-preset="detail" title="Small, crisp detail brush">Detail</button><button type="button" data-brush-preset="ink" class="active" title="General purpose ink brush">Ink</button><button type="button" data-brush-preset="soft" title="Large soft airbrush">Soft</button></div></section>
+        <label class="brush-property">SIZE <output id="contextBrushSizeValue">120 px</output><input id="contextBrushSizeInput" type="range" min="8" max="600" step="1" value="120"></label>
+        <label class="brush-property">SOFTNESS <output id="contextBrushSoftnessValue">45%</output><input id="contextBrushSoftnessInput" type="range" min="0" max="1" step="0.01" value="0.45"></label>
+        <label class="brush-property">OPACITY <output id="contextBrushOpacityValue">100%</output><input id="contextBrushOpacityInput" type="range" min="0.01" max="1" step="0.01" value="1"></label>
+        <label id="contextBrushColorControl" class="brush-color">COLOR<input id="contextBrushColorInput" type="color" value="#19dbff" title="Brush color"></label>
+        <button id="transparentColorButton" class="transparent-color-button" type="button" title="Switch between color and transparency (C)"><i></i><span>Transparent</span><kbd>C</kbd></button>
+        <div class="brush-stroke-actions"><button id="brushUndoStrokeButton" type="button" title="Undo the most recent stroke">↶ Stroke</button><button id="brushClearStrokesButton" type="button" title="Clear brush edits; project Undo restores them">Clear</button><button id="finishBrushButton" class="primary-action" type="button">Done</button></div>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="horizonCanvas" width="1280" height="720"></canvas>
+        <div id="maskBrushCursor" class="mask-brush-cursor" hidden></div>
+        <svg id="pathPointOverlay" class="path-point-overlay" hidden><polyline id="pathPointLine"></polyline></svg>
+        <svg id="motionPathOverlay" class="motion-path-overlay" hidden><polyline id="motionPathLine"></polyline></svg>
+        <div id="canvasSelection" class="canvas-selection" hidden>
+          <span class="selection-label" id="canvasSelectionLabel"></span>
+          <output id="canvasTransformReadout" class="transform-readout" hidden></output>
+          <i data-handle="nw"></i><i data-handle="ne"></i><i data-handle="sw"></i><i data-handle="se"></i><i data-handle="rotate" title="Rotate"></i>
+        </div>
+        <div id="canvasGuides" class="canvas-guides"><div class="canvas-grid"></div><div class="safe-area"></div><i class="guide-horizontal"></i><i class="guide-vertical"></i></div>
+        <div id="customGuideOverlay" class="custom-guide-overlay"></div>
+        <div id="smartGuideOverlay" class="smart-guide-overlay" hidden><i class="smart-guide-horizontal"></i><i class="smart-guide-vertical"></i></div>
+        <div id="canvasMarquee" class="canvas-marquee" hidden><span id="canvasMarqueeLabel">0 LAYERS</span></div>
+        <div id="canvasRulers" class="canvas-rulers"><div class="ruler-corner"></div><div id="horizontalRuler" class="canvas-ruler horizontal" title="Drag downward to create a horizontal guide"></div><div id="verticalRuler" class="canvas-ruler vertical" title="Drag right to create a vertical guide"></div></div>
+        <div id="emptyCanvas" class="empty-canvas"><b>NO VISUAL LAYERS</b><span>Import an image to begin composing.</span></div>
+      </div>
+      <section class="timeline-panel workspace-panel" data-workspace-panel="timeline" aria-label="Animation timeline">
+        <header data-workspace-handle="timeline">
+          <button id="timelineStartButton" title="Go to start">|◀</button><button id="timelinePlayButton" class="timeline-play" title="Play animation">▶</button>
+          <strong>ANIMATION</strong><output id="timelineTimeValue">00:00.00</output>
+          <input id="timelineScrubber" type="range" min="0" max="8" step="0.01" value="0">
+          <label>Duration <input id="timelineDurationInput" type="number" min="0.1" max="3600" step="0.1" value="8"></label>
+          <label><input id="timelineLoopInput" type="checkbox" checked> Loop</label><button id="timelineCollapseButton" class="timeline-collapse-button" title="Collapse Timeline" aria-label="Collapse Timeline">▾</button><button class="workspace-float-button" data-workspace-float-toggle="timeline" title="Float or dock Timeline">◇</button>
+        </header>
+        <div class="timeline-authoring">
+          <select id="animationTargetInput" aria-label="Animated parameter"></select><button id="addKeyframeButton">◆ Add Keyframe</button><button id="autoKeyButton" type="button" aria-pressed="false" title="When enabled, parameter edits create keyframes at the playhead">● AUTO KEY OFF</button>
+          <div class="timeline-preset-controls"><span class="preset-label">PRESET</span><select id="animationPresetInput" aria-label="Animation preset"><option value="fade-in">Fade In</option><option value="slide-in">Slide In</option><option value="pulse">Pulse</option><option value="fade-out">Fade Out</option></select><button id="applyAnimationPresetButton">Apply</button></div>
+          <select id="timelineTrackFilterInput" class="timeline-track-filter" aria-label="Timeline track filter"><option value="selected">Selected Layer</option><option value="all">All Animated</option></select><button id="timelineViewToggleButton" type="button" aria-pressed="false" title="Switch between key tracks and a value curve">CURVES</button><button id="timelineWorkAreaButton" type="button" aria-pressed="false" title="Loop playback inside a custom work area">WORK AREA OFF</button>
+        </div>
+        <div id="timelineKeyEditor" class="timeline-key-editor" hidden>
+          <strong id="timelineKeySelectionLabel">NO KEYS</strong>
+          <label>Time <input id="timelineKeyTimeInput" type="number" min="0" step="0.01"></label>
+          <label>Value <input id="timelineKeyValueInput" type="number" step="0.01"></label>
+          <label>Easing <select id="timelineKeyEasingInput"><option value="linear">Linear</option><option value="easeIn">Ease In</option><option value="easeOut">Ease Out</option><option value="easeInOut">Smooth</option><option value="bounce">Bounce</option><option value="hold">Hold</option></select></label>
+          <button id="duplicateKeyframesButton" type="button">Duplicate</button><button id="deleteKeyframesButton" type="button">Delete</button>
+          <i></i><label>In <input id="timelineLoopStartInput" type="number" min="0" step="0.01" value="0"></label><label>Out <input id="timelineLoopEndInput" type="number" min="0.1" step="0.01" value="8"></label>
+        </div>
+        <div id="timelineCurveEditor" class="timeline-curve-editor" hidden>
+          <header><div><strong id="timelineCurveTrackLabel">SELECT AN ANIMATION TRACK</strong><small id="timelineCurveRangeLabel">VALUE CURVE</small></div><label>Tolerance <select id="timelineReduceToleranceInput"><option value="0.01">1%</option><option value="0.02" selected>2%</option><option value="0.05">5%</option></select></label><button id="copyKeyframesButton" type="button">Copy</button><button id="pasteKeyframesButton" type="button">Paste</button><button id="timelineSnapFramesButton" class="active" type="button" aria-pressed="true">Snap Frames</button><button id="reduceKeyframesButton" type="button">Reduce Keys</button></header>
+          <svg id="timelineCurveSvg" viewBox="0 0 1000 180" preserveAspectRatio="none" role="img" aria-label="Selected animation value curve"></svg>
+        </div>
+        <div id="timelineTracks" class="timeline-tracks"></div>
+      </section>
+      <footer class="stage-footer">
+        <span id="frameStats">0 PASSES · 0 DRAWS</span>
+        <span>DATA HORIZON 0.20.0 · WEBGL2 · PHASE 38 GIT RELEASE</span>
+        <button id="uiScaleButton" type="button" title="Change application interface scale">UI 140%</button>
+      </footer>
+    </section>
+
+    <div class="right-dock">
+      <aside class="panel inspector-panel workspace-panel" data-workspace-panel="inspector">
+        <nav class="dock-tabs" data-workspace-handle="inspector" aria-label="Inspector sections">
+          <button data-scroll-target="propertiesSection" class="active">Properties</button>
+          <button data-scroll-target="effectSection">Effects</button>
+          <button data-scroll-target="audioSection">Audio</button><button class="workspace-float-button" data-workspace-float-toggle="inspector" title="Float or dock Inspector">◇</button>
+        </nav>
+        <div class="panel-heading"><div><span>ACTIVE ELEMENT</span><strong>Properties</strong></div><em id="selectionType">NONE</em></div>
+        <div id="emptyInspector" class="empty-inspector">Select a layer to edit its authored values.</div>
+        <div id="layerInspector" hidden>
+        <section id="propertiesSection" class="inspector-section">
+          <label class="field-label" for="layerNameInput">Layer name</label>
+          <input id="layerNameInput" class="text-input" maxlength="80">
+          <div class="toggle-row"><label><input id="layerVisibleInput" type="checkbox"> Visible</label><label><input id="layerLockedInput" type="checkbox"> Locked</label><span>Non-destructive</span></div>
+        </section>
+        <section class="inspector-section">
+          <div class="two-column compact-fields">
+            <label>Opacity<input id="layerOpacityInput" type="range" min="0" max="1" step="0.01"><output id="layerOpacityValue"></output></label>
+            <label>Blend mode<select id="layerBlendInput"><option value="normal">Normal</option><option value="add">Add</option><option value="multiply">Multiply</option><option value="screen">Screen</option></select></label>
+            <label>Depth<input id="layerDepthInput" type="range" min="-1" max="1" step="0.01"><output id="layerDepthValue"></output></label>
+            <label>Parallax<input id="layerParallaxInput" type="range" min="-1" max="1" step="0.01"><output id="layerParallaxValue"></output></label>
+          </div>
+        </section>
+        <section class="inspector-section">
+          <div class="section-title"><div><span>CANVAS ELEMENT</span><strong>Transform</strong></div></div>
+          <div class="transform-grid">
+            <label>X<input id="layerXInput" type="number" step="1"></label>
+            <label>Y<input id="layerYInput" type="number" step="1"></label>
+            <label>Width<input id="layerWidthInput" type="number" min="1" step="1"></label>
+            <label>Height<input id="layerHeightInput" type="number" min="1" step="1"></label>
+            <label>Rotation<input id="layerRotationInput" type="number" step="1"></label>
+            <label>Image fit<select id="layerFitInput"><option value="cover">Cover</option><option value="contain">Contain</option><option value="stretch">Stretch</option></select></label>
+          </div>
+          <small class="transform-help">Drag the box on the canvas to move it. Drag a corner to resize it. Every transform can receive audio.</small>
+        </section>
+        <section class="inspector-section">
+          <div class="section-title"><div><span>LAYER CONTENT</span><strong>Source</strong></div></div>
+          <div id="sourceControls" class="source-controls"></div>
+        </section>
+        <section id="effectSection" class="inspector-section">
+          <div class="section-title"><div><span>NON-DESTRUCTIVE</span><strong>Effect Stack</strong></div></div>
+          <div class="effect-preset-picker"><label class="effect-preset-name"><span>STACK PRESET</span><select id="effectPresetInput"><option value="comic-ink">Comic Ink</option><option value="neon-edge">Isolated Neon Edge</option><option value="dream-glow">Dream Glow</option><option value="crt-signal">CRT Signal</option><option value="heat-distortion">Heat Distortion</option><option value="audio-pulse-outline">Audio Pulse Outline</option></select></label><label><span>MOTION</span><select id="effectPresetMotionInput"><option value="gentle">Gentle Loop</option><option value="strong">Strong Loop</option><option value="none">Static</option></select></label><label><span>CYCLE SEC</span><input id="effectPresetCycleInput" type="number" min="0.2" max="60" step="0.1" value="2"></label><button id="previewEffectPresetButton" type="button">Preview</button><button id="applyEffectPresetButton" type="button">Apply Preset</button><button id="effectAutoKeyButton" class="effect-auto-key" type="button" aria-pressed="false" title="Record effect slider edits at the timeline playhead">● AUTO KEY OFF</button><small id="effectPresetDescription">Cel shading plus a crisp illustrated outline. Gentle Loop will add visible timeline tracks.</small></div>
+          <div id="effectList" class="effect-list"></div>
+          <div class="effect-add-grid">
+            <button data-add-effect="celShading">+ Cel</button>
+            <button data-add-effect="outline">+ Outline</button>
+            <button data-add-effect="colorGrade">+ Grade</button>
+            <button data-add-effect="luminanceMask">+ Mask</button>
+            <button data-add-effect="paintMask">+ Paint</button>
+            <button data-add-effect="paintLayer">+ Retouch</button>
+            <button data-add-region-mask="sky">+ Sky</button>
+            <button data-add-region-mask="horizon">+ Horizon</button>
+            <button data-add-region-mask="terrain">+ Terrain</button>
+            <button data-add-region-mask="foreground">+ Foreground</button>
+            <button data-add-effect="posterize">+ Poster</button>
+            <button data-add-effect="bloom">+ Bloom</button>
+            <button data-add-effect="scanlines">+ Scan</button>
+            <button data-add-effect="displacement">+ Displace</button>
+          </div>
+        </section>
+        <section id="audioSection" class="inspector-section audio-foundation">
+          <div class="section-title"><div><span>FOUNDATION PREVIEW</span><strong>Audio Assignments</strong></div></div>
+          <div id="audioDriverStatus" class="audio-driver-status"><i id="audioDriverSignal"></i><div><strong id="audioDriverStatusTitle">Generated preview active</strong><small id="audioDriverStatusDetail">Add a driver to see its live source and result.</small></div><button id="audioPreviewToggleButton" type="button">Pause Test Signal</button></div>
+          <section class="reference-audio" aria-label="Reference song preview">
+            <header><div><span>LOCAL PREVIEW SOURCE</span><strong id="referenceAudioName">No reference song loaded</strong><small id="referenceAudioStatus">Load a song to drive assignments while you work.</small></div><button id="loadReferenceAudioButton" type="button">Load Song</button></header>
+            <div class="reference-audio-transport"><button id="referenceAudioPlayButton" type="button" disabled title="Play or pause reference song">▶</button><button id="referenceAudioStopButton" type="button" disabled title="Stop and return to the beginning">■</button><input id="referenceAudioProgress" type="range" min="0" max="1" step="0.01" value="0" disabled aria-label="Reference song position"><output id="referenceAudioTime">00:00 / 00:00</output></div>
+            <div class="reference-audio-options"><label>Volume<input id="referenceAudioVolume" type="range" min="0" max="1" step="0.01" value="0.8"></label><label><input id="referenceAudioLoop" type="checkbox"> Loop song</label><label><input id="referenceAudioTimelineSync" type="checkbox"> Sync timeline</label></div>
+            <small class="reference-audio-note">Local preview only · the song is not saved in projects or included in exports.</small>
+          </section>
+          <div class="audio-meters" id="audioMeters"></div>
+          <div id="bindingList" class="binding-list"></div>
+          <div class="audio-authoring-actions"><button id="addBindingButton" class="wide-button">+ Assign music to a parameter</button><button id="bakeAudioAutomationButton" type="button" title="Record the live combined driver result into editable timeline keys">● Record Drivers to Keys</button></div>
+          <label class="toggle-row"><span><input id="mockAudioToggle" type="checkbox" checked> Generated audio when no song is playing</span><small>External host frames supported</small></label>
+        </section>
+        </div>
+      </aside>
+
+      <aside class="panel layers-panel workspace-panel" data-workspace-panel="layers">
+        <nav class="dock-tabs layer-tabs" data-workspace-handle="layers"><button class="active" data-layer-tab="layers">Layers</button><button data-layer-tab="assets">Assets</button><button data-layer-tab="masks">Masks</button><button data-layer-tab="nodes">Nodes</button><button data-layer-tab="presets">Presets</button><button data-layer-tab="vault">Vault</button><button class="workspace-float-button" data-workspace-float-toggle="layers" title="Float or dock Layers">◇</button></nav>
+        <div class="panel-heading"><div><span id="dockHeadingEyebrow">COMPOSITE STACK</span><strong id="dockHeadingTitle">Layers</strong></div><em id="layerCount">0</em></div>
+        <div id="layersDockView" class="dock-view">
+          <div class="layer-actions">
+            <button id="duplicateLayerButton">Duplicate</button>
+            <button id="groupLayerButton">Group</button>
+            <button id="deleteLayerButton">Delete</button>
+            <button id="lockLayersButton">Lock</button>
+          </div>
+          <div class="layer-order-actions">
+            <button id="moveLayerUpButton">Move Up</button>
+            <button id="moveLayerDownButton">Move Down</button>
+          </div>
+          <div class="layer-clipboard-actions"><header><strong>CLIPBOARD</strong><small id="layerClipboardStatus">EMPTY</small></header><div><button id="cutLayersButton" type="button">Cut</button><button id="copyLayersButton" type="button">Copy</button><button id="pasteLayersButton" type="button">Paste</button><button id="pasteLayersInPlaceButton" type="button">In Place</button></div></div>
+          <div class="layer-layout-actions"><header><strong id="layoutSelectionCount">1 SELECTED</strong><select id="alignmentReferenceInput" aria-label="Alignment reference"><option value="canvas">Align to Canvas</option><option value="selection">Align to Selection</option></select></header><div><button data-align-layers="left" title="Align left">L</button><button data-align-layers="hcenter" title="Align horizontal centers">HC</button><button data-align-layers="right" title="Align right">R</button><button data-align-layers="top" title="Align top">T</button><button data-align-layers="vcenter" title="Align vertical centers">VC</button><button data-align-layers="bottom" title="Align bottom">B</button><button data-distribute-layers="horizontal" title="Distribute horizontal centers">↔</button><button data-distribute-layers="vertical" title="Distribute vertical centers">↕</button></div></div>
+          <div class="layer-import-actions"><button id="importCompositionButton" type="button">＋ Import Project as Editable Layers</button></div>
+          <small class="layer-drag-help">Drag rows above, below, or into groups · drag empty space for stack bottom</small>
+          <div class="layer-navigator"><div><input id="layerSearchInput" type="search" placeholder="Search layers…" aria-label="Search layers"><button id="clearLayerSearchButton" type="button" title="Clear layer search">×</button></div><div><select id="layerFilterInput" aria-label="Filter layers"><option value="all">All layers</option><option value="visible">Visible</option><option value="hidden">Hidden</option><option value="locked">Locked</option><option value="effects">Has effects</option><option value="audio">Music driven</option><option value="animated">Animated</option><option value="groups">Groups</option></select><button id="collapseLayerGroupsButton" type="button" title="Collapse all groups">Collapse</button><button id="expandLayerGroupsButton" type="button" title="Expand all groups">Expand</button><button id="revealSelectedLayerButton" type="button" title="Reveal selected layer">Reveal</button></div><div class="layer-selection-sets"><select id="layerSelectionSetInput" aria-label="Named layer selection"><option value="">No saved selection</option></select><button id="saveLayerSelectionSetButton" type="button" title="Save current layer selection">Save</button><button id="recallLayerSelectionSetButton" type="button" title="Recall named layer selection">Recall</button><button id="deleteLayerSelectionSetButton" type="button" title="Delete named layer selection">Delete</button><button id="soloLayersButton" type="button" title="Show only selected layers">Solo</button></div><small id="layerFilterStatus">ALL LAYERS</small></div>
+          <div id="layerTree" class="layer-tree" role="tree"></div>
+          <section class="assets-summary"><span>ASSET REGISTRY</span><strong id="assetCount">0 linked assets</strong></section>
+        </div>
+        <div id="assetsDockView" class="dock-view" hidden><div class="dock-view-actions"><button id="assetsImportButton">Import Image</button><button id="removeUnusedAssetsButton">Remove Unused</button></div><div id="assetBrowser" class="asset-browser"></div></div>
+        <div id="masksDockView" class="dock-view" hidden><div class="mask-preset-actions"><button id="addPaintMaskDockButton">+ Painted</button><button data-mask-dock-preset="sky">+ Sky</button><button data-mask-dock-preset="horizon">+ Horizon</button><button data-mask-dock-preset="terrain">+ Terrain</button><button data-mask-dock-preset="foreground">+ Foreground</button></div><div id="maskBrowser" class="mask-browser"></div></div>
+        <div id="nodeDockView" class="dock-view node-dock-view" hidden>
+          <div class="node-toolbar"><select id="nodeAddInput" aria-label="Node to add"><option value="celShading">Cel Shading</option><option value="outline">Outline</option><option value="posterize">Posterize</option><option value="colorGrade">Color Grade</option><option value="bloom">Bloom</option><option value="scanlines">Scanlines</option><option value="displacement">Displacement</option><option value="luminanceMask">Luminance Mask</option><option value="paintMask">Painted Mask</option><option value="paintLayer">Paint / Erase</option><option value="region:sky">Sky Region</option><option value="region:horizon">Horizon Region</option><option value="region:terrain">Terrain Region</option><option value="region:foreground">Foreground Region</option></select><button id="nodeAddButton" type="button">＋ Add Node</button></div>
+          <div id="nodeGraphViewport" class="node-graph-viewport"><div id="nodeGraph" class="node-graph" role="list" aria-label="Selected layer render graph"></div></div>
+          <small class="node-view-help">Drag effect nodes to reorder the actual render stack. Click a node to reveal its full controls in the Inspector.</small>
+        </div>
+        <div id="presetsDockView" class="dock-view presets-dock-view" hidden>
+          <div class="preset-library-actions"><button id="saveSelectionPresetButton" type="button">＋ Save Selection</button><button id="importPresetButton" type="button">Import File…</button></div>
+          <div id="presetBrowser" class="preset-browser"></div>
+          <small class="preset-library-help">Presets carry their dependent images, music assignments, and keyframes. Insertions receive fresh internal IDs.</small>
+        </div>
+        <div id="vaultDockView" class="dock-view vault-dock-view" hidden>
+          <div class="vault-library-actions"><button id="refreshVaultButton" type="button">↻ Refresh Vault</button><button id="publishToVaultButton" type="button">＋ Publish Current</button></div>
+          <div id="vaultBrowser" class="vault-browser" aria-live="polite"></div>
+          <small class="vault-library-help">Managed Data Horizon elements in Tempest Broadcast’s OVERLAY bank. Edit Source opens a safe project copy; Update Current republishes this canvas in place.</small>
+        </div>
+      </aside>
+    </div>
+    <div id="toolboxResizer" class="workspace-resizer workspace-resizer-vertical toolbox-resizer" data-workspace-resizer="toolbox" title="Resize Toolbox"></div>
+    <div id="rightDockResizer" class="workspace-resizer workspace-resizer-vertical right-dock-resizer" data-workspace-resizer="dock" title="Resize right dock"></div>
+    <div id="timelineResizer" class="workspace-resizer workspace-resizer-horizontal timeline-resizer" data-workspace-resizer="timeline" title="Resize Timeline"></div>
+    <div id="inspectorResizer" class="workspace-resizer workspace-resizer-horizontal inspector-resizer" data-workspace-resizer="inspector" title="Resize Inspector and Layers"></div>
+  </main>
+  <dialog id="newProjectDialog" class="new-project-dialog">
+    <header><div><span>NEW COMPOSITION</span><strong>Choose a Project Starter</strong></div><button id="closeNewProjectButton" type="button" aria-label="Close">×</button></header>
+    <p>Begin with a complete editable composition or a blank canvas. Every starter uses the same layer, audio, timeline, and export model as a project built by hand.</p>
+    <label class="new-project-name">Project name <input id="newProjectNameInput" class="text-input" maxlength="80" placeholder="Use the starter name"></label>
+    <div id="newProjectGrid" class="new-project-grid">
+      <article data-project-card="blank"><i>EMPTY PROJECT</i><strong>Blank Canvas</strong><span>A clean 1920 × 1080 composition ready for your own image and elements.</span><em>0 layers · Manual setup</em><button data-project-template="blank">Start Blank</button></article>
+      <article data-project-card="quartic-visualizer"><i>QUARTIC PULSE</i><strong>Reactive Visualizer</strong><span>Spectrum architecture, waveform, data route, particles, frame, HUD, palette, audio routes, and animation.</span><em>6 layers · 6 audio routes</em><button data-project-template="quartic-visualizer">Use Visualizer</button></article>
+      <article data-project-card="tempest-window-border"><i>TEMPEST BROADCAST</i><strong>Window Border</strong><span>Transparent stream border with signal labels, bloom, an animated data route, and beat response.</span><em>Transparent · OBS ready</em><button data-project-template="tempest-window-border">Use Window Border</button></article>
+      <article data-project-card="tempest-hud-overlay"><i>TEMPEST BROADCAST</i><strong>HUD Overlay</strong><span>Transparent title, lower third, spectrum, and flowing data path for layering over a live scene.</span><em>Transparent · 8 editable layers</em><button data-project-template="tempest-hud-overlay">Use HUD Overlay</button></article>
+      <article data-project-card="tempest-transition"><i>TEMPEST BROADCAST</i><strong>Signal Transition</strong><span>Full-canvas animated transition with title, signal field, particle atmosphere, and music response.</span><em>Full scene · Animated</em><button data-project-template="tempest-transition">Use Transition</button></article>
+    </div>
+    <footer><small>Starter content remains completely non-destructive and can be saved as a normal `.horizon.json` project.</small><button id="cancelNewProjectButton" type="button">Cancel</button></footer>
+  </dialog>
+  <dialog id="templateDialog" class="template-dialog">
+    <header><div><span>BROADCAST STARTERS</span><strong>Insert Element Template</strong></div><button id="closeTemplatesButton" type="button" aria-label="Close">×</button></header>
+    <p>Templates are ordinary editable layer groups. Insert one, then change its text, colors, effects, transforms, and audio assignments.</p>
+    <div class="template-grid">
+      <article><i>LOWER THIRD</i><strong>Signal Identifier</strong><span>Two editable text lines, plate, and accent rail.</span><button data-insert-template="lower-third">Insert Lower Third</button></article>
+      <article><i>ALERT</i><strong>Signal Acquired</strong><span>Glowing event plate with an audio-reactive pulse.</span><button data-insert-template="alert">Insert Alert</button></article>
+      <article><i>TRANSITION</i><strong>Data Horizon Field</strong><span>Full-canvas title, particle field, scanlines, and displacement.</span><button data-insert-template="transition">Insert Transition</button></article>
+    </div>
+  </dialog>
+  <dialog id="presetDialog" class="preset-dialog">
+    <form id="presetForm" method="dialog">
+      <header><div><span>REUSABLE ELEMENT</span><strong>Save Selection as Preset</strong></div><button id="cancelPresetButton" type="button" aria-label="Close">×</button></header>
+      <p id="presetSelectionSummary">Save the selected layer or group with its assets, audio assignments, and animation.</p>
+      <label>Preset name<input id="presetNameInput" class="text-input" maxlength="80" required></label>
+      <label>Description<textarea id="presetDescriptionInput" class="text-input" maxlength="240" rows="4" placeholder="What this element is for"></textarea></label>
+      <footer><button id="cancelPresetFooterButton" type="button">Cancel</button><button class="primary-action" type="submit">Save to Project Library</button></footer>
+    </form>
+  </dialog>
+  <dialog id="publishDialog" class="publish-dialog">
+    <form id="publishForm" method="dialog">
+      <header><div><span>PUBLISH COMPOSITION</span><strong>Export Data Horizon Bundle</strong></div><button id="cancelPublishButton" type="button" aria-label="Close">×</button></header>
+      <p>Package this project with the shared WebGL2 runtime for another Tempest application.</p>
+      <label>Published name<input id="publishNameInput" class="text-input" maxlength="80" required></label>
+      <div class="publish-grid">
+        <label>Target<select id="publishTargetInput"><option value="quartic-pulse">Quartic Pulse</option><option value="tempest-broadcast">Tempest Broadcast</option></select></label>
+        <label>Element type<select id="publishKindInput" disabled>
+          <option value="full-scene">Full scene</option><option value="window-border">Window border</option><option value="overlay">Overlay</option><option value="hud">HUD</option><option value="lower-third">Lower third</option><option value="alert">Alert</option><option value="background">Background</option><option value="transition">Transition</option>
+        </select></label>
+      </div>
+      <label class="publish-check"><input id="publishTransparentInput" type="checkbox" disabled> Transparent canvas for compositing over video</label>
+      <section id="publishPaletteSection" class="publish-palettes">
+        <header><div><b>QUARTIC PULSE PALETTES</b><span>Optional package-owned color systems</span></div><button id="addPublishPaletteButton" type="button">＋ Add Palette</button></header>
+        <p>Each palette maps Shadow, Field, Accent, and Detail colors. Keep its ID stable so Quartic Pulse can update it without losing the user's favorite state.</p>
+        <div id="publishPaletteList" class="publish-palette-list"></div>
+      </section>
+      <section class="bundle-contents"><b>PORTABLE BUNDLE</b><span>Manifest · Project · Shared runtime · Embedded assets · Preview image</span></section>
+      <section id="publishVaultSection" class="publish-vault" hidden><div><b>TEMPEST ASSET VAULT</b><span>Install or update this element in Broadcast’s built-in OVERLAY bank. Broadcast discovers the stable HTML entry automatically.</span></div><button id="publishVaultButton" type="button">Install in Asset Vault</button></section>
+      <footer><button id="cancelPublishFooterButton" type="button">Cancel</button><button class="primary-action" type="submit">Choose Folder and Export</button></footer>
+    </form>
+  </dialog>
+  <template id="publishPaletteTemplate">
+    <article class="publish-palette-row">
+      <div class="publish-palette-identity"><label>Name<input class="text-input" data-publish-palette-name maxlength="80" required></label><label>Stable ID<input class="text-input" data-publish-palette-id maxlength="80" required></label></div>
+      <div class="publish-palette-colors">
+        <label>Shadow<input type="color" data-publish-palette-color="0"></label>
+        <label>Field<input type="color" data-publish-palette-color="1"></label>
+        <label>Accent<input type="color" data-publish-palette-color="2"></label>
+        <label>Detail<input type="color" data-publish-palette-color="3"></label>
+      </div>
+      <footer><label><input type="checkbox" data-publish-palette-favorite> Initial favorite</label><button type="button" data-remove-publish-palette>Remove</button></footer>
+    </article>
+  </template>
+  <dialog id="infoDialog" class="info-dialog"><header><div><span id="infoDialogEyebrow">DATA HORIZON</span><strong id="infoDialogTitle">Information</strong></div><button id="closeInfoDialogButton" type="button">×</button></header><div id="infoDialogBody" class="info-dialog-body"></div></dialog>
+  <dialog id="workspaceDialog" class="workspace-dialog">
+    <header><div><span>PERSONAL WORKSPACE</span><strong>Customize Layout</strong></div><button id="closeWorkspaceButton" type="button" aria-label="Close">×</button></header>
+    <p>Show, float, resize, and place each editor panel. Your workspace is saved independently from Data Horizon projects.</p>
+    <section class="workspace-saved-row"><label>Saved workspace<select id="workspaceSavedSelect"></select></label><button id="loadWorkspaceButton" type="button">Load</button><button id="deleteWorkspaceButton" type="button">Delete</button></section>
+    <section class="workspace-panel-settings">
+      <div class="workspace-setting-heading"><span>Panel</span><span>Visible</span><span>Floating</span></div>
+      <label><strong>Toolbox</strong><input type="checkbox" data-workspace-visible="toolbox"><input type="checkbox" data-workspace-floating="toolbox"></label>
+      <label><strong>Inspector</strong><input type="checkbox" data-workspace-visible="inspector"><input type="checkbox" data-workspace-floating="inspector"></label>
+      <label><strong>Layers / Assets / Masks / Nodes / Presets</strong><input type="checkbox" data-workspace-visible="layers"><input type="checkbox" data-workspace-floating="layers"></label>
+      <label><strong>Timeline</strong><input type="checkbox" data-workspace-visible="timeline"><input type="checkbox" data-workspace-floating="timeline"></label>
+    </section>
+    <section class="workspace-size-settings">
+      <label>Toolbox width<input id="workspaceToolboxWidth" type="number" min="64" max="320" step="1"></label>
+      <label>Right dock width<input id="workspaceDockWidth" type="number" min="280" max="760" step="1"></label>
+      <label>Timeline height<input id="workspaceTimelineHeight" type="number" min="90" max="420" step="1"></label>
+      <label>Inspector height<input id="workspaceInspectorHeight" type="number" min="180" max="700" step="1"></label>
+    </section>
+    <section class="workspace-scale-settings">
+      <div><span>INTERFACE LEGIBILITY</span><strong>Application Scale</strong><small>Scales all text, controls, docks, dialogs, and hit targets. Canvas zoom remains independent.</small></div>
+      <label>Scale<select id="uiScaleInput"><option value="auto">Auto for this display</option><option value="1">100%</option><option value="1.1">110%</option><option value="1.25">125%</option><option value="1.4">140%</option><option value="1.5">150%</option><option value="1.6">160%</option><option value="1.75">175%</option><option value="2">200%</option></select></label>
+      <output id="uiScaleValue">140%</output>
+      <button id="uiScaleAutoButton" type="button">Use Auto</button>
+    </section>
+    <footer><button id="resetWorkspaceButton" type="button">Reset Default</button><span></span><input id="workspaceNameInput" class="text-input" maxlength="40" placeholder="Workspace name"><button id="saveWorkspaceButton" class="primary-action" type="button">Save Workspace</button></footer>
+  </dialog>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>

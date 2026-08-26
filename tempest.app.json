@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "com.tempestmainframe.data-horizon",
+  "name": "Data Horizon Studio",
+  "version": "0.20.0",
+  "apiVersion": "1.0",
+  "description": "Non-destructive visualizer, layered scene, effect, audio-mapping, and stream-element authoring suite.",
+  "state": "release",
+  "capabilities": {
+    "provides": [
+      "asset.authoring",
+      "overlay.authoring",
+      "scene.authoring",
+      "scene.preview"
+    ],
+    "consumes": [
+      "audio.features",
+      "broadcast.preview",
+      "transport.clock"
+    ]
+  },
+  "assetTypes": {
+    "reads": [
+      "tempest.audio",
+      "tempest.image",
+      "tempest.media",
+      "tempest.profile",
+      "tempest.video"
+    ],
+    "writes": [
+      "tempest.effect",
+      "tempest.overlay",
+      "tempest.profile",
+      "tempest.scene",
+      "tempest.visual"
+    ]
+  },
+  "health": {
+    "mode": "none"
+  }
+}

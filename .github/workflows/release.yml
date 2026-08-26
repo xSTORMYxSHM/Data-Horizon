@@ -1,0 +1,60 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  windows-release:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+      - run: corepack enable
+      - run: corepack prepare pnpm@11.19.0 --activate
+      - run: pnpm install --frozen-lockfile
+      - name: Verify tag and build release
+        shell: pwsh
+        run: ./tools/build-release-windows.ps1
+      - name: Attest Windows release provenance
+        uses: actions/attest@v4
+        with:
+          subject-path: release/Data-Horizon-Studio-0.20.0-win32-x64-release.zip
+      - name: Publish GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          $manifestPath = "release/Data-Horizon-Studio-$version-release-manifest.json"
+          $manifest = Get-Content $manifestPath -Raw | ConvertFrom-Json
+          $baseNotes = Get-Content "docs/RELEASE_$version.md" -Raw
+          $integrity = @(
+            '',
+            '## Published artifact integrity',
+            '',
+            "- Archive entries: $($manifest.entries)",
+            "- Archive size: $($manifest.bytes) bytes",
+            "- SHA-256: ``$($manifest.sha256)``"
+          ) -join "`n"
+          $publishedNotes = 'release/github-release-notes.md'
+          Set-Content -LiteralPath $publishedNotes -Value ($baseNotes + $integrity) -Encoding utf8
+          gh release create $env:GITHUB_REF_NAME `
+            "release/Data-Horizon-Studio-$version-win32-x64-release.zip" `
+            "release/Data-Horizon-Studio-$version-win32-x64-release.zip.sha256" `
+            $manifestPath `
+            --title "Data Horizon Studio $version" `
+            --notes-file $publishedNotes `
+            --verify-tag

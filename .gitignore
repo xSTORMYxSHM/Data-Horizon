@@ -1,0 +1,15 @@
+node_modules/
+dist/
+release/
+.pnpm-store/
+*.log
+*.horizon.autosave
+test-output/
+/Data Horizon/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx

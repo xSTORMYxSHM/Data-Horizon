@@ -1,0 +1,26 @@
+{
+  "name": "data-horizon",
+  "version": "0.20.0",
+  "private": true,
+  "license": "GPL-3.0-only",
+  "description": "Non-destructive visual compositor and audio-reactive runtime for Tempest Mainframe.",
+  "packageManager": "pnpm@11.19.0",
+  "scripts": {
+    "verify:release": "node tools/verify-release.mjs",
+    "build": "pnpm -r --sort build",
+    "release:win": "pnpm verify:release && pnpm build && pnpm --filter @data-horizon/studio-desktop package:win",
+    "release:win:verified": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/build-release-windows.ps1",
+    "start": "pnpm --filter @data-horizon/studio-desktop start",
+    "dev": "pnpm build && pnpm start",
+    "test": "pnpm -r --sort test",
+    "check": "pnpm verify:release && pnpm build && pnpm test"
+  },
+  "engines": {
+    "node": ">=22.12.0",
+    "pnpm": ">=11"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.0"
+  }
+}

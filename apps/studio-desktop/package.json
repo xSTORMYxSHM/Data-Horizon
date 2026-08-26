@@ -1,0 +1,23 @@
+{
+  "name": "@data-horizon/studio-desktop",
+  "version": "0.20.0",
+  "private": true,
+  "license": "GPL-3.0-only",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json --noEmit && node tools/build.mjs",
+    "package:win": "node tools/package-windows.mjs",
+    "start": "electron .",
+    "test": "node --check dist/renderer/app.js && node --test test/*.test.cjs"
+  },
+  "dependencies": {
+    "@data-horizon/audio-modulation": "workspace:*",
+    "@data-horizon/export-runtime": "workspace:*",
+    "@data-horizon/project-model": "workspace:*",
+    "@data-horizon/render-runtime": "workspace:*"
+  },
+  "devDependencies": {
+    "electron": "44.0.0",
+    "esbuild": "^0.25.0"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "@data-horizon/export-runtime",
+  "version": "0.20.0",
+  "license": "GPL-3.0-only",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test test/*.test.cjs"
+  },
+  "dependencies": {
+    "@data-horizon/project-model": "workspace:*"
+  }
+}
