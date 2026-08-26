@@ -8,7 +8,7 @@ Phase 38 promotes Data Horizon Studio to the explicit 0.20.0 milestone and makes
 
 ## Continuous integration
 
-The Windows CI workflow uses Node.js 22.12.0, pnpm 11.19.0, Electron 44.0.0, the committed frozen lockfile, read-only repository permissions, bounded run time, and concurrency cancellation. Every branch and pull request runs the full build and 39-test gate.
+The Windows CI workflow uses Node.js 22.12.0, pnpm 11.19.0, Electron 44.0.0, the committed frozen lockfile, read-only repository permissions, bounded run time, and concurrency cancellation. Every branch and pull request runs the full build and 40-test gate.
 
 ## Tagged releases
 

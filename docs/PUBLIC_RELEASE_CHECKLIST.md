@@ -13,17 +13,17 @@
 
 ## Repository-owner settings
 
-- [ ] Add and verify the intended GitHub remote.
-- [ ] Confirm the repository is public and the default branch is `main`.
+- [x] Add and verify the intended GitHub remote.
+- [x] Confirm the repository is public and the default branch is `main`.
 - [ ] Enable branch protection requiring the CI workflow.
-- [ ] Enable private vulnerability reporting in repository security settings.
-- [ ] Enable Dependabot alerts and security updates.
+- [x] Enable private vulnerability reporting in repository security settings.
+- [x] Enable Dependabot alerts and security updates.
 - [ ] Enable Discussions if it will be the support channel.
 - [ ] Confirm the public author email in the existing Git history is intentional.
 
 ## Publication
 
-- [ ] Push `main` and verify CI succeeds.
-- [ ] Push annotated tag `v0.20.0`.
-- [ ] Verify the GitHub Release contains the ZIP, checksum, manifest, source archives, and artifact attestation.
+- [x] Push `main` and verify CI succeeds.
+- [x] Push annotated tag `v0.20.0`.
+- [x] Verify the GitHub Release contains the ZIP, checksum, manifest, source archives, and artifact attestation.
 - [ ] Download the published ZIP on a separate Windows account or machine, verify it, and complete a clean-launch test.

@@ -20,10 +20,8 @@ The 0.20.0 portable build is not code-signed and may trigger Windows SmartScreen
 With GitHub CLI installed, the release ZIP can be checked against the repository's signed workflow attestation:
 
 ```powershell
-gh attestation verify Data-Horizon-Studio-0.20.0-win32-x64-release.zip --repo OWNER/REPOSITORY
+gh attestation verify Data-Horizon-Studio-0.20.0-win32-x64-release.zip --repo xSTORMYxSHM/Data-Horizon
 ```
-
-Replace `OWNER/REPOSITORY` with the final public repository name.
 
 ## Building from source
 
