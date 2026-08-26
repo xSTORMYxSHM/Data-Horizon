@@ -99,7 +99,7 @@ try {
     entries = $entryCount
     sha256 = $sha256
     packagedSmokePassed = $true
-    automatedTestsPassed = 39
+    automatedTestsPassed = 40
     dependencyAudit = 'no-known-high-or-critical-vulnerabilities'
     codeSigned = $false
     privacyDocumentIncluded = $true

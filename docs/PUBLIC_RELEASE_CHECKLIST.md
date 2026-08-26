@@ -3,7 +3,7 @@
 ## Automated gates
 
 - [x] Stable 0.20.0 version is consistent across packages, engine, application, Tempest manifest, documentation, and tag.
-- [x] Frozen-lockfile build and 39 automated tests pass.
+- [x] Frozen-lockfile build and 40 automated tests pass.
 - [x] Packaged Electron/WebGL2 smoke workflow passes before clean repackaging.
 - [x] Complete dependency audit reports no known vulnerabilities.
 - [x] ZIP contents, SHA-256 checksum, and JSON manifest are generated automatically.

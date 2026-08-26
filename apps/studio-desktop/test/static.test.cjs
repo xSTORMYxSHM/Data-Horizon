@@ -102,3 +102,10 @@ test('desktop host keeps renderer isolation enabled', () => {
   assert.match(main, /composition:reveal-file/);
   assert.match(main, /stripCompositionLinks/);
 });
+
+test('Windows packaging materializes Electron before copying its runtime', () => {
+  const packager = fs.readFileSync(path.join(root, 'tools/package-windows.mjs'), 'utf8');
+  assert.match(packager, /require\('electron'\)/);
+  assert.match(packager, /path\.dirname\(electronExecutable\)/);
+  assert.doesNotMatch(packager, /require\.resolve\('electron\/package\.json'\)/);
+});

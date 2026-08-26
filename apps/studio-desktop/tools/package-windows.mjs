@@ -9,7 +9,10 @@ const packageData = JSON.parse(await readFile(path.join(appRoot, 'package.json')
 const releaseRoot = path.join(workspaceRoot, 'release');
 const output = path.join(releaseRoot, `Data Horizon Studio ${packageData.version}-win32-x64`);
 const require = createRequire(import.meta.url);
-const electronDist = path.join(path.dirname(require.resolve('electron/package.json')), 'dist');
+// Electron 44 downloads its platform binary lazily when the module is loaded.
+// Resolving package.json alone leaves a clean CI install without a dist folder.
+const electronExecutable = require('electron');
+const electronDist = path.dirname(electronExecutable);
 
 if (!output.startsWith(`${releaseRoot}${path.sep}`)) throw new Error('Release output escaped the release directory.');
 await rm(output, { recursive: true, force: true });

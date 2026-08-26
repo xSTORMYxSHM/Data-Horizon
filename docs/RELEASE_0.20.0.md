@@ -32,7 +32,7 @@ The project schema remains version 1. Existing 0.17 projects normalize into the 
 
 ## Verification
 
-- 39 automated tests pass.
+- 40 automated tests pass.
 - Source and packaged Electron/WebGL2 workflows pass with zero browser or renderer errors.
 - The packaged workflow covers the complete authoring smoke fixture, including Phase 37 selection sets and hierarchy-aware Solo/Restore.
 - The public ZIP is unsigned at the Windows executable level; users can verify its SHA-256 checksum and GitHub workflow attestation.
