@@ -30,8 +30,7 @@ Replace `OWNER/REPOSITORY` with the final public repository name.
 Install Node.js 22.12.0 or newer and pnpm 11.19.0, then run:
 
 ```powershell
-corepack enable
-corepack prepare pnpm@11.19.0 --activate
+npm install --global pnpm@11.19.0
 pnpm install --frozen-lockfile
 pnpm check
 pnpm start

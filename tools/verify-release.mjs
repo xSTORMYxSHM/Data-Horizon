@@ -31,6 +31,10 @@ const sourceChecks = [
   ['packages/project-model/src/index.ts', `DATA_HORIZON_VERSION = '${version}'`],
   ['apps/studio-desktop/src/renderer/index.html', `DATA HORIZON ${version}`],
   ['apps/studio-desktop/src/renderer/app.ts', `Version ${version}`],
+  ['.github/workflows/ci.yml', 'actions/checkout@v6'],
+  ['.github/workflows/ci.yml', 'pnpm/setup@v2'],
+  ['.github/workflows/release.yml', 'actions/checkout@v6'],
+  ['.github/workflows/release.yml', 'pnpm/setup@v2'],
   ['.github/workflows/release.yml', 'actions/attest@v4'],
   ['.github/workflows/release.yml', 'attestations: write'],
   ['.github/workflows/release.yml', `release/Data-Horizon-Studio-${version}-win32-x64-release.zip`],
@@ -43,6 +47,11 @@ const sourceChecks = [
 for (const [file, expected] of sourceChecks) {
   const contents = await read(file);
   if (!contents.includes(expected)) failures.push(`${file} is missing release marker: ${expected}`);
+}
+
+for (const file of ['.github/workflows/ci.yml', '.github/workflows/release.yml']) {
+  const contents = await read(file);
+  if (contents.includes('corepack prepare')) failures.push(`${file} must not rely on the runner's stale Corepack key bundle.`);
 }
 
 for (const file of ['.gitattributes', '.github/dependabot.yml', '.github/workflows/ci.yml', '.github/workflows/release.yml', '.github/ISSUE_TEMPLATE/bug_report.yml', '.github/ISSUE_TEMPLATE/feature_request.yml', '.github/pull_request_template.md', 'CONTRIBUTING.md', 'PRIVACY.md', 'SECURITY.md', 'SUPPORT.md', 'THIRD_PARTY_NOTICES.md', 'docs/INSTALLATION.md', 'docs/PUBLIC_RELEASE_CHECKLIST.md']) {

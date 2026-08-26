@@ -5,8 +5,7 @@
 Use Node.js 22.12.0 or newer and pnpm 11 or newer.
 
 ```powershell
-corepack enable
-corepack prepare pnpm@11.19.0 --activate
+npm install --global pnpm@11.19.0
 pnpm install --frozen-lockfile
 pnpm check
 ```
