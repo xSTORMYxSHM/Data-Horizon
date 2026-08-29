@@ -4771,6 +4771,10 @@ function bindEditorEvents(): void {
     const project = createProjectTemplate(kind, element<HTMLInputElement>('#newProjectNameInput').value);
     activeDockTab = 'layers';
     replaceProject(project);
+    if (kind === 'open-broadcast-kit') {
+      timelinePlaying = true;
+      renderTimeline();
+    }
     newProjectDialog.close();
     showToast(kind === 'blank' ? 'Blank canvas created. Import a picture to begin.' : `${project.name} starter created. Every element is editable.`);
   }));
@@ -5636,7 +5640,7 @@ function bindEditorEvents(): void {
     else if (command === 'workspace-editing') setWorkspaceLayout(defaultWorkspaceLayout(), 'Editing workspace loaded.');
     else if (command === 'workspace-preview') setWorkspaceLayout(previewWorkspaceLayout(), 'Preview workspace loaded.');
     else if (command === 'shortcuts') showInfo('REFERENCE', 'Keyboard Shortcuts', '<div class="shortcut-grid"><span>Save / Save As</span><kbd>Ctrl+S / Ctrl+Shift+S</kbd><span>Undo / Redo</span><kbd>Ctrl+Z / Ctrl+Y</kbd><span>Cut / copy layers</span><kbd>Ctrl+X / Ctrl+C</kbd><span>Paste / paste in place</span><kbd>Ctrl+V / Ctrl+Shift+V</kbd><span>Find layers</span><kbd>/</kbd><span>Duplicate layer</span><kbd>Ctrl+D</kbd><span>Delete layer</span><kbd>Delete</kbd><span>Previous / next layer</span><kbd>[ / ]</kbd><span>Open Node View</span><kbd>Shift+N</kbd><span>Play timeline</span><kbd>K</kbd><span>Return to start</span><kbd>Home</kbd><span>Fit canvas</span><kbd>F</kbd><span>Canvas zoom</span><kbd>Ctrl + / −</kbd><span>Interface scale</span><kbd>Ctrl+Shift + / −</kbd><span>Auto interface scale</span><kbd>Ctrl+0</kbd><span>Toggle guides</span><kbd>G</kbd><span>Pan canvas</span><kbd>Space + drag</kbd></div>');
-    else if (command === 'about') showInfo('DATA HORIZON STUDIO', 'Version 0.20.0', '<h3>Non-destructive visual compositor</h3><p>Author layered, audio-reactive visualizers and broadcast elements for Quartic Pulse and Tempest Broadcast.</p><p>0.20 milestone · verified Git release pipeline · named layer selection sets · hierarchy-aware Solo/Restore.</p><p>Interface patterns are inspired by professional graphics editors; no third-party source code or assets are included.</p>');
+    else if (command === 'about') showInfo('DATA HORIZON STUDIO', 'Version 0.20.5', '<h3>Non-destructive visual compositor</h3><p>Author layered, audio-reactive visualizers and broadcast elements for Quartic Pulse and Tempest Broadcast.</p><p>Open Broadcast Kit · verified Git release pipeline · named layer selection sets · hierarchy-aware Solo/Restore.</p><p>Interface patterns are inspired by professional graphics editors; no third-party source code or assets are included.</p>');
   };
   type MenuItem = { label: string; command: string; shortcut?: string; selection?: boolean } | 'separator';
   const menuDefinitions: Record<string, MenuItem[]> = {

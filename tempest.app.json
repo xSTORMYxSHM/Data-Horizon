@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "com.tempestmainframe.data-horizon",
   "name": "Data Horizon Studio",
-  "version": "0.20.0",
+  "version": "0.20.5",
   "apiVersion": "1.0",
   "description": "Non-destructive visualizer, layered scene, effect, audio-mapping, and stream-element authoring suite.",
   "state": "release",

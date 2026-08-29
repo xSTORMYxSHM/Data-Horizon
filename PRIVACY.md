@@ -1,6 +1,6 @@
 # Privacy
 
-Data Horizon Studio 0.20.0 does not require an account and does not include analytics, advertising, crash reporting, or automatic update telemetry.
+Data Horizon Studio 0.20.5 does not require an account and does not include analytics, advertising, crash reporting, or automatic update telemetry.
 
 ## Local data
 

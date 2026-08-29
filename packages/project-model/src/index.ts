@@ -1,5 +1,5 @@
 export const HORIZON_SCHEMA_VERSION = 1 as const;
-export const DATA_HORIZON_VERSION = '0.20.0' as const;
+export const DATA_HORIZON_VERSION = '0.20.5' as const;
 
 export type BlendMode = 'normal' | 'add' | 'multiply' | 'screen';
 export type AudioSource = 'bass' | 'mids' | 'highs' | 'beat' | 'rms';
@@ -8,7 +8,7 @@ export type BindingCombine = 'add' | 'multiply' | 'max';
 export type EffectType = 'celShading' | 'outline' | 'colorGrade' | 'luminanceMask' | 'regionMask' | 'paintMask' | 'paintLayer' | 'posterize' | 'bloom' | 'scanlines' | 'displacement';
 export type RegionMaskPreset = 'sky' | 'horizon' | 'terrain' | 'foreground';
 export type BroadcastTemplateKind = 'lower-third' | 'alert' | 'transition';
-export type ProjectTemplateKind = 'blank' | 'quartic-visualizer' | 'tempest-window-border' | 'tempest-hud-overlay' | 'tempest-transition';
+export type ProjectTemplateKind = 'blank' | 'open-broadcast-kit' | 'quartic-visualizer' | 'tempest-window-border' | 'tempest-hud-overlay' | 'tempest-transition';
 export type KeyframeEasing = 'linear' | 'easeIn' | 'easeOut' | 'easeInOut' | 'bounce' | 'hold';
 export type AnimationPreset = 'fade-in' | 'slide-in' | 'pulse' | 'fade-out';
 export type LayerDropPlacement = 'before' | 'after' | 'inside' | 'root-end';
@@ -701,6 +701,7 @@ export function createBroadcastTemplate(kind: BroadcastTemplateKind): GroupLayer
 export function createProjectTemplate(kind: ProjectTemplateKind, requestedName = ''): HorizonProject {
   const names: Record<ProjectTemplateKind, string> = {
     blank: 'Untitled Horizon',
+    'open-broadcast-kit': 'Open Broadcast Kit',
     'quartic-visualizer': 'Quartic Pulse Visualizer',
     'tempest-window-border': 'Tempest Window Border',
     'tempest-hud-overlay': 'Tempest HUD Overlay',
@@ -717,6 +718,144 @@ export function createProjectTemplate(kind: ProjectTemplateKind, requestedName =
       curve: 'smoothstep', combine: 'add', enabled: true
     });
   };
+
+  if (kind === 'open-broadcast-kit') {
+    const ink = '#11141BEE';
+    const panel = '#191E29E8';
+    const line = '#4C8DFF';
+    const accent = '#FFB45A';
+    const detail = '#F4F7FC';
+    project.canvas.background = [0, 0, 0, 0];
+    project.palettes = [{ id: 'open-broadcast-neutral', name: 'Open Broadcast Neutral', colors: ['#11141B', '#242C3B', line, accent], favorite: true }];
+
+    const frame = createShapeLayer('frame', 'Reactive Canvas Frame');
+    frame.stroke = line;
+    frame.strokeWidth = 7;
+    frame.cornerRadius = 28;
+    const frameBloom = createEffect('bloom');
+    frameBloom.parameters.intensity = .42;
+    frame.effects.push(frameBloom);
+
+    const alertPlate = createShapeLayer('rectangle', 'Alert Surface');
+    alertPlate.transform = { x: 850, y: 180, width: 760, height: 190, rotation: 0 };
+    alertPlate.fill = panel;
+    alertPlate.stroke = accent;
+    alertPlate.strokeWidth = 4;
+    alertPlate.cornerRadius = 22;
+    const alertBloom = createEffect('bloom');
+    alertBloom.parameters.intensity = .5;
+    alertPlate.effects.push(alertBloom);
+    const alertKicker = createTextLayer('COMMUNITY EVENT', 'Alert Category');
+    alertKicker.transform = { x: 850, y: 132, width: 660, height: 38, rotation: 0 };
+    alertKicker.fontFamily = 'Cascadia Mono';
+    alertKicker.fontSize = 25;
+    alertKicker.fontWeight = 700;
+    alertKicker.letterSpacing = 4;
+    alertKicker.color = accent;
+    const alertTitle = createTextLayer('NEW SUPPORTER', 'Alert Message');
+    alertTitle.transform = { x: 850, y: 190, width: 660, height: 72, rotation: 0 };
+    alertTitle.fontSize = 58;
+    alertTitle.color = detail;
+    const alertWave = createWaveformLayer('Alert Activity');
+    alertWave.transform = { x: 850, y: 244, width: 650, height: 42, rotation: 0 };
+    alertWave.color = accent;
+    alertWave.amplitude = .16;
+    const alert = createGroupLayer('Open Event Alert', [alertKicker, alertTitle, alertWave, alertPlate]);
+
+    const chatBody = createShapeLayer('rectangle', 'Chat Surface');
+    chatBody.transform = { x: 1592, y: 564, width: 520, height: 700, rotation: 0 };
+    chatBody.fill = ink;
+    chatBody.stroke = line;
+    chatBody.strokeWidth = 4;
+    chatBody.cornerRadius = 24;
+    const chatHeader = createShapeLayer('rectangle', 'Chat Header Surface');
+    chatHeader.transform = { x: 1592, y: 252, width: 520, height: 76, rotation: 0 };
+    chatHeader.fill = '#242C3BFA';
+    chatHeader.stroke = line;
+    chatHeader.strokeWidth = 3;
+    chatHeader.cornerRadius = 20;
+    const chatTitle = createTextLayer('LIVE CHAT', 'Chat Heading');
+    chatTitle.transform = { x: 1592, y: 252, width: 440, height: 54, rotation: 0 };
+    chatTitle.fontFamily = 'Cascadia Mono';
+    chatTitle.fontSize = 32;
+    chatTitle.letterSpacing = 5;
+    chatTitle.color = detail;
+    const chatHint = createTextLayer('Messages render behind this editable shell', 'Chat Integration Note');
+    chatHint.transform = { x: 1592, y: 530, width: 420, height: 150, rotation: 0 };
+    chatHint.fontSize = 28;
+    chatHint.fontWeight = 500;
+    chatHint.lineHeight = 1.35;
+    chatHint.color = '#AAB7CB';
+    const chatActivity = createWaveformLayer('Chat Voice Activity');
+    chatActivity.transform = { x: 1592, y: 856, width: 420, height: 72, rotation: 0 };
+    chatActivity.color = line;
+    chatActivity.amplitude = .2;
+    const chat = createGroupLayer('Open Chat Panel', [chatTitle, chatHint, chatActivity, chatHeader, chatBody]);
+
+    const lowerPlate = createShapeLayer('rectangle', 'Lower Third Surface');
+    lowerPlate.transform = { x: 410, y: 862, width: 700, height: 154, rotation: 0 };
+    lowerPlate.fill = panel;
+    lowerPlate.stroke = line;
+    lowerPlate.strokeWidth = 3;
+    lowerPlate.cornerRadius = 20;
+    const lowerAccent = createShapeLayer('rectangle', 'Lower Third Accent');
+    lowerAccent.transform = { x: 82, y: 862, width: 22, height: 154, rotation: 0 };
+    lowerAccent.fill = accent;
+    lowerAccent.strokeWidth = 0;
+    lowerAccent.cornerRadius = 10;
+    const lowerName = createTextLayer('CREATOR NAME', 'Lower Third Name');
+    lowerName.transform = { x: 405, y: 836, width: 590, height: 64, rotation: 0 };
+    lowerName.alignment = 'left';
+    lowerName.fontSize = 50;
+    lowerName.color = detail;
+    const lowerRole = createTextLayer('CHANNEL // LIVE', 'Lower Third Detail');
+    lowerRole.transform = { x: 405, y: 894, width: 590, height: 40, rotation: 0 };
+    lowerRole.alignment = 'left';
+    lowerRole.fontFamily = 'Cascadia Mono';
+    lowerRole.fontSize = 26;
+    lowerRole.letterSpacing = 3;
+    lowerRole.color = accent;
+    const lowerThird = createGroupLayer('Open Lower Third', [lowerName, lowerRole, lowerAccent, lowerPlate]);
+
+    const meterPlate = createShapeLayer('rectangle', 'Meter Surface');
+    meterPlate.transform = { x: 790, y: 1010, width: 1120, height: 74, rotation: 0 };
+    meterPlate.fill = ink;
+    meterPlate.stroke = '#59657A';
+    meterPlate.strokeWidth = 2;
+    meterPlate.cornerRadius = 18;
+    const spectrum = createSpectrumLayer('Program Audio Spectrum');
+    spectrum.transform = { x: 790, y: 1008, width: 980, height: 50, rotation: 0 };
+    spectrum.bars = 64;
+    spectrum.colorLow = line;
+    spectrum.colorHigh = accent;
+    spectrum.gain = .72;
+    spectrum.glow = .4;
+    const meter = createGroupLayer('Open Audio Meter', [spectrum, meterPlate]);
+
+    project.layers = [alert, chat, lowerThird, meter, frame];
+    bind('beat', `layer.${frame.id}.source.strokeWidth`, 3);
+    bind('highs', `layer.${frame.id}.effect.${frameBloom.id}.intensity`, .38);
+    bind('beat', `layer.${alertPlate.id}.effect.${alertBloom.id}.intensity`, .7);
+    bind('rms', `layer.${alertWave.id}.source.amplitude`, .42);
+    bind('mids', `layer.${chatActivity.id}.source.amplitude`, .34);
+    bind('bass', `layer.${lowerAccent.id}.transform.width`, 18);
+    bind('bass', `layer.${spectrum.id}.source.gain`, .8);
+    bind('highs', `layer.${spectrum.id}.source.glow`, .45);
+    project = applyAnimationPreset(project, alert.id, 'fade-in');
+    project = applyAnimationPreset(project, lowerThird.id, 'slide-in');
+
+    const presetDescriptions = new Map<string, string>([
+      [frame.id, 'Full-canvas border with editable beat thickness and high-frequency glow routes.'],
+      [alert.id, 'Neutral supporter alert with editable typography, waveform, surfaces, animation, and audio response.'],
+      [chat.id, 'Portrait-friendly chat shell designed to sit above or around a separate browser-chat source.'],
+      [lowerThird.id, 'Two-line identity plate with an audio-reactive accent rail and entrance animation.'],
+      [meter.id, 'Compact program-audio spectrum with independent bass gain and high-frequency glow routes.']
+    ]);
+    project.presets = project.layers
+      .map((layer) => createLayerPreset(project, layer.id, layer.name, presetDescriptions.get(layer.id)))
+      .filter((preset): preset is HorizonLayerPreset => Boolean(preset));
+    return project;
+  }
 
   if (kind === 'quartic-visualizer') {
     const title = createHudTextLayer('signal-title');

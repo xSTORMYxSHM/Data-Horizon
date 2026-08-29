@@ -1,6 +1,6 @@
 # Data Horizon Studio
 
-Current development build: **0.20.0**
+Current development build: **0.20.5**
 
 Data Horizon Studio is a purpose-built, non-destructive visual compositor for authoring audio-reactive visualizers, scenes, and broadcast elements for Quartic Pulse and Tempest Broadcast. Its primary composition workflow is deliberately familiar to GIMP and Photoshop users: begin with a picture, stack independent visual elements above it, manipulate them on the canvas, and assign audio sources to individual properties. Layer retouching uses a Clip Studio Paint-inspired contextual brush workflow.
 
@@ -8,16 +8,16 @@ Source code is released under the GNU General Public License version 3. Packaged
 
 The product is an editor and runtime, not a general-purpose raster editor. A project is an ordered graph of groups and layers. Each layer can own masks, effects, blend state, depth/parallax, and parameter-level audio modulation. The original media is never modified.
 
-## First public release
+## Current public release
 
-Data Horizon Studio 0.20.0 is a portable, unsigned Windows x64 release. Download the ZIP, checksum, and manifest together, verify the SHA-256 value, extract the complete folder, and then launch `Data Horizon Studio.exe`. See [installation and provenance verification](docs/INSTALLATION.md) before running the public build.
+Data Horizon Studio 0.20.5 is a portable, unsigned Windows x64 release candidate that adds the Open Broadcast Kit example and preserves the verified 0.20 release pipeline. Download the ZIP, checksum, and manifest together, verify the SHA-256 value, extract the complete folder, and then launch `Data Horizon Studio.exe`. See [installation and provenance verification](docs/INSTALLATION.md) before running the build.
 
-- [Release notes](docs/RELEASE_0.20.0.md)
+- [0.20.5 release notes](docs/RELEASE_0.20.5.md)
+- [Open Broadcast Kit guide](docs/OPEN_BROADCAST_KIT.md)
 - [Privacy](PRIVACY.md)
 - [Support](SUPPORT.md)
 - [Security policy](SECURITY.md)
 - [Third-party notices](THIRD_PARTY_NOTICES.md)
-- [Public release checklist](docs/PUBLIC_RELEASE_CHECKLIST.md)
 
 ## Version-one outcome
 
@@ -97,11 +97,13 @@ Data Horizon Studio 0.20.0 is a portable, unsigned Windows x64 release. Download
 - [0.17.21 release](docs/RELEASE_0.17.21.md)
 - [Phase 38 verified Git release pipeline](docs/PHASE_38_IMPLEMENTATION.md)
 - [0.20.0 release](docs/RELEASE_0.20.0.md)
+- [Open Broadcast Kit](docs/OPEN_BROADCAST_KIT.md)
+- [0.20.5 release](docs/RELEASE_0.20.5.md)
 - [Publish and export formats](docs/EXPORT_FORMATS.md)
 
 ## Current status
 
-Phases 1–38 are implemented. The repository now contains:
+Phases 1–38 and the Open Broadcast Kit are implemented. The repository now contains:
 
 - An Electron and TypeScript workspace with isolated renderer security defaults.
 - A schema-versioned project model and immutable layer commands.
@@ -156,16 +158,17 @@ Phases 1–38 are implemented. The repository now contains:
 - A compact Layer Navigator for dense projects with persistent group disclosure, ancestor-aware name/type/effect search, eight activity and state filters, match counts, Collapse All, Expand All, Reveal Selected, and `/` search focus.
 - Project-portable named layer selection sets with exact multi-selection recall, ancestor expansion, and hierarchy-aware Solo/Restore that preserves every layer's prior visibility state.
 - A verified GitHub release pipeline with version/tag consistency checks, frozen-lockfile CI, packaged WebGL2 smoke validation, clean ZIP auditing, SHA-256 checksums, and machine-readable release manifests.
+- A neutral Open Broadcast Kit reference project containing five editable, reusable, audio-reactive broadcast presets with transparent Tempest/OBS publishing.
 
 ## Windows build
 
-For a local verified build, run `release/Data Horizon Studio 0.20.0-win32-x64/Data Horizon Studio.exe`, or extract `release/Data-Horizon-Studio-0.20.0-win32-x64-release.zip` first. The GitHub release workflow rebuilds, tests, audits, attests, and publishes its own artifact from tag `v0.20.0`.
+For a local verified build, run `release/Data Horizon Studio 0.20.5-win32-x64/Data Horizon Studio.exe`, or extract `release/Data-Horizon-Studio-0.20.5-win32-x64-release.zip` first. The GitHub release workflow rebuilds, tests, audits, attests, and publishes its own artifact from tag `v0.20.5`.
 
 ## Development
 
 Requirements: Node.js 22.12.0 or newer and pnpm 11 or newer.
 
-Version builds advance by one patch number. The release after the explicit 0.20.0 milestone is 0.20.1, followed by 0.20.2, 0.20.3, and so on. Minor or major version changes are reserved for an explicitly chosen product milestone rather than every development phase.
+Version builds advance by one patch number. The release after 0.20.5 is 0.20.6, followed by 0.20.7, 0.20.8, and so on. Minor or major version changes are reserved for an explicitly chosen product milestone rather than every development phase.
 
 ```powershell
 pnpm install --frozen-lockfile

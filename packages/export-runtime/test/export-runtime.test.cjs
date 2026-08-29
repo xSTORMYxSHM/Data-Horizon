@@ -21,8 +21,8 @@ test('builds a Quartic Pulse visualizer manifest', () => {
   const manifest = exporter.createBundleManifest(project, { target: 'quartic-pulse', name: 'Signal World' });
   assert.equal(manifest.format, 'data-horizon.quartic-visualizer');
   assert.equal(manifest.entrypoint, 'runtime/index.html');
-  assert.equal(manifest.version, '0.20.0');
-  assert.equal(manifest.engine.version, '0.20.0');
+  assert.equal(manifest.version, '0.20.5');
+  assert.equal(manifest.engine.version, '0.20.5');
   assert.equal(manifest.visualizer.acceptsOfflineFrames, true);
   assert.equal(manifest.palettes.length, 2);
   assert.deepEqual(manifest.palettes[0], { id: 'signal-neon', name: 'Signal Neon', colors: ['#091125', '#20466E', '#63558E', '#6BA8B5'], favorite: true });
@@ -48,6 +48,18 @@ test('builds a stable Tempest Asset Vault manifest', () => {
   assert.equal(manifest.assetVault.bank, 'OVERLAY');
   assert.equal(manifest.assetVault.stableFile, 'vault-hud.html');
   assert.equal(manifest.assetVault.updateKey, 'com.tempestmainframe.data-horizon.vault-hud');
+});
+
+test('publishes the Open Broadcast Kit as a transparent editable Tempest overlay', () => {
+  const project = model.createProjectTemplate('open-broadcast-kit');
+  const options = { target: 'tempest-broadcast', name: 'Open Broadcast Kit', tempestKind: 'overlay', transparent: true };
+  const validation = exporter.validatePublish(project, options);
+  assert.equal(validation.ok, true, validation.errors.join(' '));
+  const manifest = exporter.createBundleManifest(project, options);
+  assert.equal(manifest.format, 'data-horizon.tempest-element-pack');
+  assert.equal(manifest.elementPack.browserSource.transparent, true);
+  assert.equal(manifest.audio.parameterBindings, 8);
+  assert.equal(project.presets.length, 5);
 });
 
 test('rejects a publish with no visible visual content', () => {

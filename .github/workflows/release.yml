@@ -32,7 +32,7 @@ jobs:
       - name: Attest Windows release provenance
         uses: actions/attest@v4
         with:
-          subject-path: release/Data-Horizon-Studio-0.20.0-win32-x64-release.zip
+          subject-path: release/Data-Horizon-Studio-0.20.5-win32-x64-release.zip
       - name: Publish GitHub Release
         shell: pwsh
         env:

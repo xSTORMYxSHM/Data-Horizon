@@ -2,7 +2,7 @@
 
 Data Horizon Studio source is licensed under GNU GPL version 3. The development and packaged runtime use third-party components under their own compatible licenses.
 
-Direct build and runtime dependencies resolved by the 0.20.0 lockfile include:
+Direct build and runtime dependencies resolved by the 0.20.5 lockfile include:
 
 | Component | Resolved version | License |
 | --- | ---: | --- |

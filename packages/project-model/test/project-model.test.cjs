@@ -8,7 +8,7 @@ test('creates and validates a version-one project', () => {
   const project = model.createProject('Test Horizon');
   assert.equal(model.validateProject(project).ok, true);
   assert.equal(project.schemaVersion, 1);
-  assert.equal(project.engineVersion, '0.20.0');
+  assert.equal(project.engineVersion, '0.20.5');
   assert.deepEqual(project.palettes, []);
   assert.deepEqual(project.guides, []);
   assert.equal(project.guidesLocked, false);
@@ -68,7 +68,7 @@ test('reduces dense linear automation while preserving meaningful motion', () =>
   assert.equal(model.validateProject(project).ok, true);
 });
 
-test('normalizes legacy projects into the 0.20.0 project contract', () => {
+test('normalizes legacy projects into the 0.20.5 project contract', () => {
   const legacy = model.createProject();
   legacy.layers.push(model.createTextLayer('LEGACY'));
   delete legacy.layers[0].locked;
@@ -78,7 +78,7 @@ test('normalizes legacy projects into the 0.20.0 project contract', () => {
   delete legacy.guidesLocked;
   legacy.engineVersion = '0.1.0';
   const normalized = model.normalizeProject(legacy);
-  assert.equal(normalized.engineVersion, '0.20.0');
+  assert.equal(normalized.engineVersion, '0.20.5');
   assert.equal(normalized.timeline.duration, 8);
   assert.deepEqual(normalized.timeline.tracks, []);
   assert.deepEqual(normalized.palettes, []);
@@ -467,13 +467,28 @@ test('creates waveform, particle, and broadcast template layers', () => {
   }
 });
 
-test('creates complete Quartic Pulse and Tempest Broadcast starter projects', () => {
+test('creates complete open, Quartic Pulse, and Tempest Broadcast starter projects', () => {
   const blank = model.createProjectTemplate('blank');
+  const openKit = model.createProjectTemplate('open-broadcast-kit');
   const quartic = model.createProjectTemplate('quartic-visualizer');
   const border = model.createProjectTemplate('tempest-window-border');
   const overlay = model.createProjectTemplate('tempest-hud-overlay');
   const transition = model.createProjectTemplate('tempest-transition');
   assert.equal(blank.layers.length, 0);
+  assert.equal(openKit.name, 'Open Broadcast Kit');
+  assert.equal(openKit.canvas.background[3], 0);
+  assert.equal(openKit.layers.length, 5);
+  assert.equal(openKit.presets.length, 5);
+  assert.ok(openKit.bindings.length >= 8);
+  assert.ok(openKit.presets.every((preset) => model.validateLayerPreset(preset).ok));
+  for (const preset of openKit.presets) {
+    const inserted = model.insertLayerPreset(model.createProject('Preset Target'), preset);
+    assert.ok(inserted.selectedId, `${preset.name} should insert a selected root layer`);
+    assert.equal(model.validateProject(inserted.project).ok, true, `${preset.name} should remain a valid project after insertion`);
+    assert.equal(inserted.project.bindings.length, preset.bindings.length, `${preset.name} should preserve its audio drivers`);
+    assert.equal(inserted.project.timeline.tracks.length, preset.tracks.length, `${preset.name} should preserve its animation tracks`);
+  }
+  assert.doesNotMatch(JSON.stringify(openKit), /TEMPEST|QUARTIC/i);
   assert.equal(quartic.name, 'Quartic Pulse Visualizer');
   assert.ok(quartic.layers.some((layer) => layer.type === 'spectrum'));
   assert.ok(quartic.bindings.length >= 6);
@@ -483,7 +498,7 @@ test('creates complete Quartic Pulse and Tempest Broadcast starter projects', ()
   assert.equal(overlay.canvas.background[3], 0);
   assert.ok(model.flattenLayers(overlay.layers).some((layer) => layer.name === 'Lower Third'));
   assert.equal(transition.canvas.background[3], 1);
-  for (const project of [blank, quartic, border, overlay, transition]) {
+  for (const project of [blank, openKit, quartic, border, overlay, transition]) {
     assert.equal(model.validateProject(project).ok, true, model.validateProject(project).errors.join(' '));
   }
 });

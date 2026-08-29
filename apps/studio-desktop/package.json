@@ -1,6 +1,6 @@
 {
   "name": "@data-horizon/studio-desktop",
-  "version": "0.20.0",
+  "version": "0.20.5",
   "private": true,
   "license": "GPL-3.0-only",
   "main": "dist/main.js",

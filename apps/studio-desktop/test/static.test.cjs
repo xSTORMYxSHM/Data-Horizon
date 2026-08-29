@@ -20,7 +20,7 @@ test('editor ships the authoring workspace surfaces', () => {
   for (const preset of ['detail', 'ink', 'soft']) assert.match(html, new RegExp(`data-brush-preset="${preset}"`));
   for (const preset of ['comic-ink', 'neon-edge', 'dream-glow', 'crt-signal', 'heat-distortion', 'audio-pulse-outline']) assert.match(html, new RegExp(`value="${preset}"`));
   for (const template of ['lower-third', 'alert', 'transition']) assert.match(html, new RegExp(`data-insert-template="${template}"`));
-  for (const template of ['blank', 'quartic-visualizer', 'tempest-window-border', 'tempest-hud-overlay', 'tempest-transition']) assert.match(html, new RegExp(`data-project-template="${template}"`));
+  for (const template of ['blank', 'open-broadcast-kit', 'quartic-visualizer', 'tempest-window-border', 'tempest-hud-overlay', 'tempest-transition']) assert.match(html, new RegExp(`data-project-template="${template}"`));
   for (const preset of ['fade-in', 'slide-in', 'pulse', 'fade-out']) assert.match(html, new RegExp(`value="${preset}"`));
   for (const menu of ['file', 'edit', 'select', 'layer', 'effects', 'audio', 'view', 'window', 'workspace', 'help']) assert.match(html, new RegExp(`data-menu="${menu}"`));
   for (const panel of ['toolbox', 'inspector', 'layers', 'timeline']) {
@@ -28,10 +28,11 @@ test('editor ships the authoring workspace surfaces', () => {
     assert.match(html, new RegExp(`data-workspace-floating="${panel}"`));
   }
   for (const tab of ['layers', 'assets', 'masks', 'nodes', 'presets', 'vault']) assert.match(html, new RegExp(`data-layer-tab="${tab}"`));
-  assert.match(html, /DATA HORIZON 0\.20\.0/);
+  assert.match(html, /DATA HORIZON 0\.20\.5/);
   assert.match(html, /Content-Security-Policy/);
   assert.doesNotMatch(html, /'unsafe-inline'/);
   const app = fs.readFileSync(path.join(root, 'dist/renderer/app.js'), 'utf8');
+  assert.match(app, /kind === ["']open-broadcast-kit["'][\s\S]*timelinePlaying = true/);
   assert.match(app, /Extract to Layer/);
   assert.match(app, /Make It Dance/);
   assert.match(app, /extractEffectToLayer/);
