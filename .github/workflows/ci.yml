@@ -19,7 +19,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/setup@v2
+      - uses: pnpm/setup@v3
         with:
           version: '11.19.0'
           runtime: 'node@22.12.0'
