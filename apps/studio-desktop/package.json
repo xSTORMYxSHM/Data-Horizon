@@ -17,7 +17,7 @@
     "@data-horizon/render-runtime": "workspace:*"
   },
   "devDependencies": {
-    "electron": "44.0.0",
+    "electron": "44.9.1",
     "esbuild": "^0.25.0"
   }
 }
